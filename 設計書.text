@@ -1,0 +1,20 @@
+⚪︎job_interviewsテーブル
+  ・面接id int primary_key 「interview_id」
+   ⇨自動生成
+
+  ・企業名 str　「company_name」
+
+  ・面接開始日時 datetime　「interview_datetime」
+   ⇨15分刻み、面接時間の重複禁止
+
+  ・面接場所 str　「location」
+   ⇨東京、北海道、オンラインなど
+
+⚪︎CRUD機能の処理
+  ・create 面接の予定を作成できる
+
+  ・read 面接の予定一覧を確認できる
+
+  ・update 登録している面接の予定を編集、更新できる
+
+  ・delete 登録している面接の予定を削除できる
