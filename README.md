@@ -9,7 +9,7 @@
 # セットアップ
 #### 必要なパッケージのインストール
 ```zsh
-pip install fastapi uvicorn pydantic sqlalchemy sqlite
+pip install fastapi uvicorn pydantic sqlalchemy sqlite streamlit
 ```
 #### APIサーバーの立ち上げ
 ローカルでAPIサーバーを立ち上げる
