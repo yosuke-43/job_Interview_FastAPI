@@ -27,10 +27,79 @@ df_interviews = df_interviews.rename(columns={
 }) 
 st.table(df_interviews)
 
+# st.write('#### 面接編集')
+# # 面接編集フォーム
+# with st.form(key='edit_interview'):
+#     interview_id_to_edit = st.number_input('編集する面接のidを入力してください:', min_value=1)
+#     edit_button = st.form_submit_button(label='編集')
+
+# if edit_button:
+#     # 指定された面接IDが存在するか確認
+#     if interview_id_to_edit not in df_interviews['面接id'].values:
+#         st.error('指定された面接が見つかりませんでした')
+#     else:
+#         url_edit = f'http://127.0.0.1:8000/interviews/{interview_id_to_edit}'
+#         res_edit = requests.edit(url_edit)
+#         if res_edit.status_code == 200:
+#             st.success('面接が編集されました')
+#         else:
+#             st.error('面接の編集中にエラーが発生しました')
+
+
+st.write('#### 面接編集')
+# 面接編集フォーム
+with st.form(key='edit_interview'):
+    interview_id_to_edit = st.number_input('編集する面接のidを入力してください:', min_value=1)
+    edit_button = st.form_submit_button(label='編集')
+
+# 編集ページの表示部分
+if edit_button:
+    # 指定された面接IDが存在するか確認
+    if interview_id_to_edit not in df_interviews['面接id'].values:
+        st.error('指定された面接が見つかりませんでした')
+    else:
+        # 編集ページに遷移する
+        st.session_state.interview_id_to_edit = interview_id_to_edit
+
+# 編集ページでの処理
+if 'interview_id_to_edit' in st.session_state:
+    interview_id_to_edit = st.session_state.interview_id_to_edit
+    selected_interview = df_interviews[df_interviews['面接id'] == int(interview_id_to_edit)].iloc[0]
+
+    # 編集フォームを表示
+    form_key = f'edit_interview_{interview_id_to_edit}'  # ユニークなキーを生成する
+    with st.form(key=form_key):
+        company_name = st.text_input('企業名', value=selected_interview['企業名'], max_chars=50)
+        date = st.date_input('日付: ', value=datetime.datetime.strptime(selected_interview['面接開始日時'], '%Y/%m/%d %H:%M').date(), min_value=datetime.date.today())
+        start_time = st.time_input('開始時刻: ', value=datetime.datetime.strptime(selected_interview['面接開始日時'], '%Y/%m/%d %H:%M').time())
+        location = st.text_input('面接場所', value=selected_interview['面接場所'])
+        submit_button = st.form_submit_button(label='保存')
+
+    if submit_button:
+        data = {
+            'company_name': company_name,
+            'interview_datetime': datetime.datetime(year=date.year, month=date.month, day=date.day, hour=start_time.hour, minute=start_time.minute).isoformat(),
+            'location': location
+        }
+        url_edit = f'http://127.0.0.1:8000/interviews/{interview_id_to_edit}'
+        res_edit = requests.patch(url_edit, data=json.dumps(data))
+
+        if res_edit.status_code == 200:
+            st.success('面接が編集されました')
+        else:
+            st.error('面接の編集中にエラーが発生しました')
+
+
+
+
+
+
+
+
 st.write('#### 面接削除')
 # 面接削除フォーム
 with st.form(key='delete_interview'):
-    interview_id_to_delete = st.number_input('削除する面接のidを入力してください:', min_value=0)
+    interview_id_to_delete = st.number_input('削除する面接のidを入力してください:', min_value=1)
     delete_button = st.form_submit_button(label='削除')
 
 if delete_button:
@@ -44,6 +113,7 @@ if delete_button:
             st.success('面接が削除されました')
         else:
             st.error('面接の削除中にエラーが発生しました')
+
 
 
 st.write('#### 面接登録')

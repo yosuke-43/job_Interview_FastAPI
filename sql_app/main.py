@@ -18,10 +18,6 @@ def get_db():
 
 # API部分
 
-# @app.get("/")
-# async def index():
-#   return {"message": "Success!!!!"}
-
 # Read
 @app.get("/interviews", response_model=List[schemas.Interview])
 async def read_interviews(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
@@ -36,4 +32,9 @@ async def create_interview(interview: schemas.InterviewCreate, db: Session = Dep
 # Delete
 @app.delete("/interviews/{interview_id}")
 async def delete_interview(interview_id: int, db: Session = Depends(get_db)):
-    return crud.delete_interview(db=db, interview_id=interview_id)
+  return crud.delete_interview(db=db, interview_id=interview_id)
+
+# Update
+@app.patch("/interviews/{interview_id}", response_model=schemas.Interview)
+async def update_interview(interview_id: int, updated_interview: schemas.InterviewUpdate, db: Session = Depends(get_db)):
+  return crud.update_interview(db=db, interview_id=interview_id, updated_interview=updated_interview)
