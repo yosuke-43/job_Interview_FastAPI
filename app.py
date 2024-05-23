@@ -13,37 +13,23 @@ res = requests.get(url_interviews)
 interviews = res.json()
 df_interviews = pd.DataFrame(interviews)
 
-# 日時のフォーマットを見やすい形に変換
-to_datetime = lambda x: datetime.datetime.fromisoformat(x).strftime('%Y/%m/%d %H:%M')
+# DataFrameが空の場合
+if df_interviews.empty:
+    st.write("予定している面接はありません。")
+else:
+  # 日時のフォーマットを見やすい形に変換
+  to_datetime = lambda x: datetime.datetime.fromisoformat(x).strftime('%Y/%m/%d %H:%M')
 
-# 面接開始日時の列に適用
-df_interviews['interview_datetime'] = df_interviews['interview_datetime'].map(to_datetime)
+  # 面接開始日時の列に適用
+  df_interviews['interview_datetime'] = df_interviews['interview_datetime'].map(to_datetime)
 
-df_interviews = df_interviews.rename(columns={
-  'company_name': '企業名',
-  'interview_datetime': '面接開始日時',
-  'location': '面接場所',
-  'interview_id': '面接id'
-}) 
-st.table(df_interviews)
-
-# st.write('#### 面接編集')
-# # 面接編集フォーム
-# with st.form(key='edit_interview'):
-#     interview_id_to_edit = st.number_input('編集する面接のidを入力してください:', min_value=1)
-#     edit_button = st.form_submit_button(label='編集')
-
-# if edit_button:
-#     # 指定された面接IDが存在するか確認
-#     if interview_id_to_edit not in df_interviews['面接id'].values:
-#         st.error('指定された面接が見つかりませんでした')
-#     else:
-#         url_edit = f'http://127.0.0.1:8000/interviews/{interview_id_to_edit}'
-#         res_edit = requests.edit(url_edit)
-#         if res_edit.status_code == 200:
-#             st.success('面接が編集されました')
-#         else:
-#             st.error('面接の編集中にエラーが発生しました')
+  df_interviews = df_interviews.rename(columns={
+    'company_name': '企業名',
+    'interview_datetime': '面接開始日時',
+    'location': '面接場所',
+    'interview_id': '面接id'
+  }) 
+  st.table(df_interviews)
 
 
 st.write('#### 面接編集')
@@ -88,12 +74,6 @@ if 'interview_id_to_edit' in st.session_state:
             st.success('面接が編集されました')
         else:
             st.error('面接の編集中にエラーが発生しました')
-
-
-
-
-
-
 
 
 st.write('#### 面接削除')
