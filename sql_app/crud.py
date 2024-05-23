@@ -22,3 +22,15 @@ def delete_interview(db: Session, interview_id: int):
     interview = db.query(models.Interview).filter(models.Interview.interview_id == interview_id).first()
     db.delete(interview)
     db.commit()
+
+# 面接編集
+def update_interview(db: Session, interview_id: int, updated_interview: schemas.InterviewUpdate):
+    db_interview = db.query(models.Interview).filter(models.Interview.interview_id == interview_id).first()
+    if db_interview:
+        for attr, value in updated_interview.dict().items():
+            setattr(db_interview, attr, value)
+        db.commit()
+        db.refresh(db_interview)
+        return db_interview
+    else:
+        return None
