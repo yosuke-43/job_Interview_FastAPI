@@ -32,3 +32,8 @@ async def read_interviews(skip: int = 0, limit: int = 100, db: Session = Depends
 @app.post("/interviews", response_model=schemas.Interview)
 async def create_interview(interview: schemas.InterviewCreate, db: Session = Depends(get_db)):
   return crud.create_interview(db=db, interview=interview)
+
+# Delete
+@app.delete("/interviews/{interview_id}")
+async def delete_interview(interview_id: int, db: Session = Depends(get_db)):
+    return crud.delete_interview(db=db, interview_id=interview_id)

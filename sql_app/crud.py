@@ -16,3 +16,9 @@ def create_interview(db: Session, interview: schemas.Interview):
   db.commit()
   db.refresh(db_interview)
   return db_interview
+
+# 面接削除
+def delete_interview(db: Session, interview_id: int):
+    interview = db.query(models.Interview).filter(models.Interview.interview_id == interview_id).first()
+    db.delete(interview)
+    db.commit()
