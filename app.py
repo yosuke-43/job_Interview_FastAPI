@@ -1,4 +1,4 @@
-import streamlit as st # Streamlitというpython用のUIを編集できるフレームワーク
+import streamlit as st
 import datetime
 import requests
 import json
@@ -26,6 +26,25 @@ df_interviews = df_interviews.rename(columns={
   'interview_id': '面接id'
 }) 
 st.table(df_interviews)
+
+st.write('#### 面接削除')
+# 面接削除フォーム
+with st.form(key='delete_interview'):
+    interview_id_to_delete = st.number_input('削除する面接のidを入力してください:', min_value=0)
+    delete_button = st.form_submit_button(label='削除')
+
+if delete_button:
+    # 指定された面接IDが存在するか確認
+    if interview_id_to_delete not in df_interviews['面接id'].values:
+        st.error('指定された面接が見つかりませんでした')
+    else:
+        url_delete = f'http://127.0.0.1:8000/interviews/{interview_id_to_delete}'
+        res_delete = requests.delete(url_delete)
+        if res_delete.status_code == 200:
+            st.success('面接が削除されました')
+        else:
+            st.error('面接の削除中にエラーが発生しました')
+
 
 st.write('#### 面接登録')
 # 面接一覧取得
@@ -58,5 +77,3 @@ if submit_button:
   )
   if res.status_code == 200:
     st.success('面接登録完了')
-  st.write(res.status_code)
-  st.json(res.json())
