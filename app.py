@@ -56,7 +56,10 @@ if 'interview_id_to_edit' in st.session_state:
     form_key = f'edit_interview_{interview_id_to_edit}'  # ユニークなキーを生成する
     with st.form(key=form_key):
         company_name = st.text_input('企業名', value=selected_interview['企業名'], max_chars=50)
-        date = st.date_input('日付: ', value=datetime.datetime.strptime(selected_interview['面接開始日時'], '%Y/%m/%d %H:%M').date(), min_value=datetime.date.today())
+        # 日付入力のデフォルト値が現在の日付以上になるようにする
+        interview_date = datetime.datetime.strptime(selected_interview['面接開始日時'], '%Y/%m/%d %H:%M').date()
+        default_date = max(interview_date, datetime.date.today())
+        date = st.date_input('日付: ', value=default_date, min_value=datetime.date.today())
         start_time = st.time_input('開始時刻: ', value=datetime.datetime.strptime(selected_interview['面接開始日時'], '%Y/%m/%d %H:%M').time())
         location = st.text_input('面接場所', value=selected_interview['面接場所'])
         submit_button = st.form_submit_button(label='保存')
@@ -68,7 +71,8 @@ if 'interview_id_to_edit' in st.session_state:
             'location': location
         }
         url_edit = f'http://127.0.0.1:8000/interviews/{interview_id_to_edit}'
-        res_edit = requests.patch(url_edit, data=json.dumps(data))
+        headers = {"Content-Type": "application/json"}
+        res_edit = requests.patch(url_edit, data=json.dumps(data), headers=headers)
 
         if res_edit.status_code == 200:
             st.success('面接が編集されました')
